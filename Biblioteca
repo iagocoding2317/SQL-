@@ -1,0 +1,127 @@
+CREATE TABLE alunos (
+    id INT PRIMARY KEY,
+    nome VARCHAR(100),
+    curso VARCHAR(100)
+);
+
+CREATE TABLE livros (
+    id INT PRIMARY KEY,
+    titulo VARCHAR(150),
+    autor VARCHAR(100),
+    categoria VARCHAR(50)
+);
+
+CREATE TABLE emprestimos (
+    id INT PRIMARY KEY,
+    aluno_id INT,
+    livro_id INT,
+    data_emprestimo DATE,
+    data_devolucao DATE,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id),
+    FOREIGN KEY (livro_id) REFERENCES livros(id)
+);
+
+INSERT INTO alunos 
+VALUES (13, 'Joel', 'Gastronomia'),
+(15, 'Donaldo Daniel', 'Medicina'),
+(17, 'Ellie', 'Física'),
+(19, 'Pedro', 'Medicina'),
+(20, 'Cammmyllahar', 'Física'),
+(21, 'Kazuma Kiryu', 'Educação Física'),
+(22, 'Remy', 'Gastronomia'),
+(23, 'Gordon Ramsay', 'Gastronomia'),
+(24, 'Dr. House', 'Medicina'),
+(25, 'Meredith Grey', 'Medicina'),
+(26, 'Sheldon Cooper', 'Física'),
+(27, 'Tony Stark', 'Física'),
+(28, 'Luna Lovegood', 'Física'),
+(29, 'Luffy', 'Educação Física'),
+(30, 'Shrek', 'Educação Física'),
+(31, 'Goku', 'Educação Física');
+
+INSERT INTO livros
+VALUES (130, 'Tutorial de Fortnite', 'Gonho', 'Tecnologia'),
+(131, 'A arte de Da Vinci', 'Gibiei', 'História'),
+(132, 'JoJo''s Bizarre Adventure', 'Araki', 'Mangá'),   
+(133, 'Guerra dos Planetas', 'Barros', 'Ficção científica'),
+(134, 'As Brumas de Avalon', 'Marion Zimmer Bradley', 'Fantasia'),
+(135, 'Evangelion', 'Hideki Anno', 'Psicologia'),
+(136, 'Operação Natal', 'The Rock', 'Comédia'),
+(137, 'I Am Music', 'Playboi Carti', 'Música'),
+(138, 'Sobrevivendo no Inferno', 'Racionais MC''s', 'Música'),
+(139, 'Bobbie Goods: Pintada com vida', 'Daniel Bobbie Goods', 'Desenho');
+
+INSERT INTO emprestimos
+VALUES (1300, 13, 139, '2025-12-11', '2025-12-13'),
+(1400, 13, 135, '2023-11-08', '2024-06-15'),
+(1500, 15, 132, '2001-09-11', null),
+(1600, 15, 137, '1999-07-15', '2000-05-06'),
+(1700, 17, 136, '2006-01-19', null),
+(1800, 17, 139, '2015-09-26', null),
+(1900, 19, 135, '0008-08-12', '1945-05-07'),
+(2000, 17,131, '1970-05-07', '1974-09-11'),
+(2100, 20, 138, '2000-08-29', '2001-01-31'),
+(2200, 20, 133, '2009-04-12', '2010-01-01'),
+(2300, 21, null, null, null),
+(2400, 22, 134, '2024-01-05', '2024-01-20'),
+(2500, 23, 133, '2024-03-15', null),
+(2600, 24, 132, '2025-06-01', '2025-06-21'),
+(2700, 25, 131, '2025-04-18', null),
+(2800, 26, 139, '2025-07-10', null),
+(2900, 27, 135, '2025-07-11', null),
+(3000, 28, 136, '2025-07-12', null),
+(3100, 29, 138, '2025-07-13', null),
+(3200, 30, 137, '2025-07-14', null),
+(3300, 31, 134, '2025-07-15', null);
+
+
+select a.nome as "Nome do Aluno", count(e.livro_id) as "Quantidade de empréstimos"
+from emprestimos e
+join alunos a on e.aluno_id = a.id
+GROUP BY a.nome;
+
+select l.titulo as "Título do livro", count(e.livro_id) as "Vezes emprestadas"
+from emprestimos e
+join livros l on l.id = e.livro_id
+GROUP BY l.titulo
+order by count(e.livro_id) desc;
+
+select a.curso as "Nome do Curso", count(e.livro_id) as "Empréstimos"
+from emprestimos e
+join alunos a on e.aluno_id = a.id
+join livros l on l.id= e.livro_id
+GROUP BY a.curso
+ORDER BY count(e.livro_id) desc;
+
+select a.nome as "Nome do Aluno", count(e.livro_id) as "Máximo"
+from emprestimos e 
+join alunos a on a.id = e.aluno_id
+GROUP BY a.nome
+ORDER BY count(e.livro_id) desc
+LIMIT 1;
+
+select l.titulo, a.nome, data_devolucao
+from emprestimos e 
+join livros l on l.id = e.livro_id
+join alunos a on a.id = e.aluno_id
+where data_devolucao is null and
+aluno_id is not null;
+
+
+select a.nome, count(a.id)/ count(e.livro_id) as "Média"
+from emprestimos e
+join alunos a on a.id = e.aluno_id
+where e.livro_id is not null
+GROUP by a.nome;
+
+select l.categoria, count(e.livro_id)
+from emprestimos e
+join livros l on l.id = e.livro_id
+GROUP BY l.categoria
+ORDER BY count(e.livro_id) desc;
+
+
+
+
+
+

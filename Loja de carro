@@ -1,0 +1,100 @@
+CREATE TABLE Cliente (
+    id_cliente SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    telefone VARCHAR(20),
+    email VARCHAR(100)
+);
+
+
+CREATE TABLE Veiculo (
+    id_veiculo SERIAL PRIMARY KEY,
+    modelo VARCHAR(100) NOT NULL,
+    marca VARCHAR(50),
+    ano INT,
+    categoria VARCHAR(50), -- SUV, Sedan, Hatch, etc.
+    preco_diaria NUMERIC(10,2),
+    disponivel BOOLEAN DEFAULT TRUE
+);
+
+
+CREATE TABLE Aluguel (
+    id_aluguel SERIAL PRIMARY KEY,
+    id_cliente INT REFERENCES Cliente(id_cliente),
+    id_veiculo INT REFERENCES Veiculo(id_veiculo),
+    data_inicio DATE NOT NULL,
+    data_fim DATE NOT NULL,
+    valor_total NUMERIC(10,2)
+);
+
+INSERT INTO Cliente
+VALUES 
+(21, 'GBA', '10072298102', '83999999999', 'oruammelhorquemetallica@hotmail.com'),
+(99, 'Sister Hong', '11128891002', '8299991111', 'danielbobbiegoods@labubu.com'),
+(83, 'Donaldo Bobbie Goods', '34546568795311', '8399900000', 'gonholabubu@gmail.com'),
+(00, 'Jordan Terrell Carter', '00009955200', '1534283344', '00pium@opiumlabel.com'),
+(31, 'Pedro Hytalo Café com Deus Pai da Silva', '478246378467', '3213213213231', 'netomorangobrainrot@yahoo.com'),
+(78, 'Kanye West', '372473447446', '734764326362', 'davebluntsbiancacensorigraduation@ye.com');
+
+INSERT INTO Veiculo 
+VALUES 
+(230, 'Bobson', 'Bugatti', 2009, 'SUV', 1000.00, FALSE),
+(801, 'Vermelho da paixão', 'Toyota', 2021, 'Pick-up', 2000.00, FALSE),
+(760, 'BobGood', 'DanielFord', 2025, 'Fullsize Crossover', 7000.00, FALSE),
+(860, 'LabubuCar', 'Ferrari', 1980, 'Sedan', 6000.00, TRUE),
+(980, 'IAMCAR', 'Opium00', 2010, 'Jeep', 9000.00, TRUE),
+(790, 'Whole Lotta Car', 'Chevrolet', 2020, 'SUV', 6500.00, TRUE),
+(800, 'Transformer', 'Tesla', 2008, 'SUV', 7400.00, TRUE);
+
+INSERT INTO Aluguel
+VALUES
+(4000, 21, 860, '1984-04-04', '1984-05-11', 1000.00),
+(9000, 99, 800, '2010-09-05', '2010-12-25', 10000000.00),
+(10000, 31, 790, '2021-01-01', '2021-03-21', 500000.00),
+(12000, 83, 790, '2025-06-11', '2025-07-23', 600000.00),
+(15000, 00, 980, '2012-09-08', '2012-09-30', 700000.00),
+(18000, 78, 790, '2022-08-02', '2022-10-23', 900000.00);
+
+SELECT c.nome as "Nome do cliente", v.modelo as "Modelo do Veículo"
+FROM Aluguel a 
+join cliente c on c.id_cliente = a.id_cliente
+join Veiculo v on v.id_veiculo = a.id_veiculo;
+
+SELECT c.nome as "Nome do cliente", v.modelo as "Modelo do Veículo", a.valor_total as "Valor total do aluguel"
+from aluguel a 
+join Cliente c on c.id_cliente = a.id_cliente
+join Veiculo v on v.id_veiculo = a.id_veiculo
+where valor_total > 1000.00;
+
+SELECT v.modelo as "Modelos nunca alugados"
+from Veiculo v
+left join Aluguel a on v.id_veiculo = a.id_veiculo
+where a.id_veiculo is null;
+
+SELECT c.nome as "Nome do Cliente", v.categoria as "Categoria do veículo", c.email as "Email do Cliente"
+from Aluguel a
+join Cliente c on a.id_cliente = c.id_cliente
+join Veiculo v on v.id_veicleftulo = a.id_veiculo
+where categoria = 'SUV';
+
+SELECT SUM(a.valor_total) as "Valor total de aluguéis"
+from Aluguel a;
+
+SELECT v.categoria as "Categoria do veículo", count(v.categoria) as "Quantidade das categorias alugadas"
+from Aluguel a 
+join Veiculo v on v.id_veiculo = a.id_veiculo
+group by v.categoria
+order by count(v.categoria) desc;
+
+Select c.nome as "Nome do Cliente", SUM(a.valor_total) as "Valor Total"
+from Aluguel a 
+join Cliente c on c.id_cliente = a.id_cliente
+group by c.nome
+ORDER BY SUM(a.valor_total) desc
+LIMIT 5;
+
+Select c.nome as "Nome do Cliente", AVG(a.valor_total) as "Média"
+from Aluguel a 
+join Cliente c on c.id_cliente = a.id_cliente
+group by c.nome
+ORDER BY AVG(a.valor_total) desc;
